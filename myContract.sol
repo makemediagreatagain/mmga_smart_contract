@@ -10,8 +10,8 @@ contract MMGA {
     bytes32 textHash;
 
     //In case comment refers to specific passage. begIndex should be set to -1 in case it doesn't
-    uint32 begIndex;
-    uint32 endIndex;
+    int32 begIndex;
+    int32 endIndex;
     Comment[] parts;
   }
 
@@ -108,7 +108,7 @@ contract MMGA {
   
   //begIndex = -1 means comment does not refer to passage in text
   //For domain comment (added on behalf of someone)
-  function addComment(int articleIndex, bytes32 myAuthorId, bytes32 myTextHash, uint32 myBegIndex, uint32 myEndIndex) {
+  function addComment(int articleIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, int32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
     require(myAuthorId.length != 0);
@@ -127,7 +127,7 @@ contract MMGA {
 
   }
   
-  function addNestedCommment(int articleIndex, int commentIndex, bytes32 myTextHash, uint32 myBegIndex, uint32 myEndIndex) {
+  function addNestedCommment(int articleIndex, int commentIndex, bytes32 myTextHash, int32 myBegIndex, int32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
     if(myBegIndex != -1) {
@@ -147,7 +147,7 @@ contract MMGA {
 
   }
 
-  function addNestedCommment(int articleIndex, int commentIndex, bytes32 myAuthorId, bytes32 myTextHash, uint32 myBegIndex, uint32 myEndIndex) {
+  function addNestedCommment(int articleIndex, int commentIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, int32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
     if(myBegIndex != -1) {
@@ -200,7 +200,7 @@ contract MMGA {
     }
     for(uint i = start; i < articles.length; i++) {
       if(articles[i].uriHash == uriHash) {
-       return i;
+        return i;
       }
     }
     return -1;
