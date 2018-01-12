@@ -67,7 +67,7 @@ contract MMGA {
 
   }
 
-  function setAuthorInArticle(int articleIndex, uint16 authorIndex) {
+  function setAuthorInArticle(uint articleIndex, uint16 authorIndex) {
     //Author can only be set by the creator of the article
     require(msg.sender == article.creator);
     require(articleIndex < articles.length);
@@ -89,7 +89,7 @@ contract MMGA {
 
 
   //begIndex = -1 means comment does not refer to passage in text
-  function addComment(int articleIndex, bytes32 myTextHash, uint32 myBegIndex, uint32 myEndIndex) {
+  function addComment(uint articleIndex, bytes32 myTextHash, uint32 myBegIndex, uint32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
     if(myBegIndex != -1) {
@@ -108,7 +108,7 @@ contract MMGA {
   
   //begIndex = -1 means comment does not refer to passage in text
   //For domain comment (added on behalf of someone)
-  function addComment(int articleIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, int32 myEndIndex) {
+  function addComment(uint articleIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, int32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
     require(myAuthorId.length != 0);
@@ -127,7 +127,7 @@ contract MMGA {
 
   }
   
-  function addNestedCommment(int articleIndex, int commentIndex, bytes32 myTextHash, int32 myBegIndex, int32 myEndIndex) {
+  function addNestedCommment(uint articleIndex, uint commentIndex, bytes32 myTextHash, int32 myBegIndex, int32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
     if(myBegIndex != -1) {
@@ -147,7 +147,7 @@ contract MMGA {
 
   }
 
-  function addNestedCommment(int articleIndex, int commentIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, int32 myEndIndex) {
+  function addNestedCommment(uint articleIndex, uint commentIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, int32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
     if(myBegIndex != -1) {
