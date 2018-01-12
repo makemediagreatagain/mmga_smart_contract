@@ -11,7 +11,7 @@ contract MMGA {
 
     //In case comment refers to specific passage. begIndex should be set to -1 in case it doesn't
     int32 begIndex;
-    int32 endIndex;
+    uint32 endIndex;
     Comment[] parts;
   }
 
@@ -39,20 +39,24 @@ contract MMGA {
     contractOwner = msg.sender;
   }
 
+
   function addArticle(int32 myTimestamp, bytes32 myUriHash, bytes32 myTitleHash, bytes32 myAuthorHash) {
     require(!articleExists(myUriHash, myTimestamp));
 
-    Article tempArticle = Article({
+    articles.push(Article({
         creatorDomain: msg.sender,
+        creator: 0,
         timestamp: myTimestamp,
         uriHash: myUriHash,
         titleHash: myTitleHash,
-        authorHash: myAuthorHash
-      });
-
-    articles.push(tempArticle);
+        authorHash: myAuthorHash,
+        authorMapped: false,
+        authorIndex: 0,
+        comments: new Comment[](0)
+      }));
 
   }
+
   function addArticle(bytes32 myCreator, int32 myTimestamp, bytes32 myUriHash, bytes32 myTitleHash, bytes32 myAuthorHash) {
     require(!articleExists(myUriHash, myTimestamp));
 
@@ -62,14 +66,17 @@ contract MMGA {
         timestamp: myTimestamp,
         uriHash: myUriHash,
         titleHash: myTitleHash,
-        authorHash: myAuthorHash
+        authorHash: myAuthorHash,
+        authorMapped: false,
+        authorIndex: 0, 
+        comments: new Comment[](0)
       }));
 
   }
 
   function setAuthorInArticle(uint articleIndex, uint16 authorIndex) {
     //Author can only be set by the creator of the article
-    require(msg.sender == article.creator);
+    require(msg.sender == article.creatorDomain);
     require(articleIndex < articles.length);
 
     Article article = articles[articleIndex];
@@ -89,31 +96,33 @@ contract MMGA {
 
 
   //begIndex = -1 means comment does not refer to passage in text
-  function addComment(uint articleIndex, bytes32 myTextHash, uint32 myBegIndex, uint32 myEndIndex) {
+  function addComment(uint articleIndex, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
     if(myBegIndex != -1) {
-      require(myBegIndex < myEndIndex);
+      require(uint(myBegIndex) < myEndIndex);
     }
 
     Article article = articles[articleIndex];
     article.comments.push(Comment({
         authorDomain: msg.sender,
+        authorId: 0,
         textHash: myTextHash,
         begIndex: myBegIndex,
-        endIndex: myEndIndex
+        endIndex: myEndIndex,
+        parts: new Comment[](0)
       }));
 
   }
   
   //begIndex = -1 means comment does not refer to passage in text
   //For domain comment (added on behalf of someone)
-  function addComment(uint articleIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, int32 myEndIndex) {
+  function addComment(uint articleIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
     require(myAuthorId.length != 0);
     if(myBegIndex != -1) {
-      require(myBegIndex < myEndIndex);
+      require(uint(myBegIndex) < myEndIndex);
     }
 
     Article article = articles[articleIndex];
@@ -122,16 +131,17 @@ contract MMGA {
         authorId: myAuthorId,
         textHash: myTextHash,
         begIndex: myBegIndex,
-        endIndex: myEndIndex
+        endIndex: myEndIndex,
+        parts: new Comment[](0)
       }));
 
   }
   
-  function addNestedCommment(uint articleIndex, uint commentIndex, bytes32 myTextHash, int32 myBegIndex, int32 myEndIndex) {
+  function addNestedCommment(uint articleIndex, uint commentIndex, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
     if(myBegIndex != -1) {
-      require(myBegIndex < myEndIndex);
+      require(uint(myBegIndex) < myEndIndex);
     }
 
     Article article = articles[articleIndex];
@@ -140,18 +150,20 @@ contract MMGA {
 
     article.comments[commentIndex].parts.push(Comment({
         authorDomain: msg.sender,
+        authorId: 0,
         textHash: myTextHash,
         begIndex: myBegIndex,
-        endIndex: myEndIndex
+        endIndex: myEndIndex,
+        parts: new Comment[](0)
       }));
 
   }
 
-  function addNestedCommment(uint articleIndex, uint commentIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, int32 myEndIndex) {
+  function addNestedCommment(uint articleIndex, uint commentIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
     if(myBegIndex != -1) {
-      require(myBegIndex < myEndIndex);
+      require(uint(myBegIndex) < myEndIndex);
     }
 
     Article article = articles[articleIndex];
@@ -163,7 +175,8 @@ contract MMGA {
         authorId: myAuthorId,
         textHash: myTextHash,
         begIndex: myBegIndex,
-        endIndex: myEndIndex
+        endIndex: myEndIndex,
+        parts: new Comment[](0)
       }));
 
   }
