@@ -43,6 +43,7 @@ contract MMGA {
   function addArticle(int32 myTimestamp, bytes32 myUriHash, bytes32 myTitleHash, bytes32 myAuthorHash) {
     require(!articleExists(myUriHash, myTimestamp));
 
+    Comment[] tempComments;
     articles.push(Article({
         creatorDomain: msg.sender,
         creator: 0,
@@ -52,7 +53,7 @@ contract MMGA {
         authorHash: myAuthorHash,
         authorMapped: false,
         authorIndex: 0,
-        comments: new Comment[](0)
+        comments: tempComments
       }));
 
   }
@@ -60,6 +61,7 @@ contract MMGA {
   function addArticle(bytes32 myCreator, int32 myTimestamp, bytes32 myUriHash, bytes32 myTitleHash, bytes32 myAuthorHash) {
     require(!articleExists(myUriHash, myTimestamp));
 
+    Comment[] tempComments;
     articles.push(Article({
         creatorDomain: msg.sender,
         creator: myCreator,
@@ -69,7 +71,7 @@ contract MMGA {
         authorHash: myAuthorHash,
         authorMapped: false,
         authorIndex: 0, 
-        comments: new Comment[](0)
+        comments: tempComments
       }));
 
   }
@@ -104,13 +106,14 @@ contract MMGA {
     }
 
     Article article = articles[articleIndex];
+    Comment[] tempParts;
     article.comments.push(Comment({
         authorDomain: msg.sender,
         authorId: 0,
         textHash: myTextHash,
         begIndex: myBegIndex,
         endIndex: myEndIndex,
-        parts: new Comment[](0)
+        parts: tempParts
       }));
 
   }
@@ -126,13 +129,14 @@ contract MMGA {
     }
 
     Article article = articles[articleIndex];
+    Comment[] tempParts;
     article.comments.push(Comment({
         authorDomain: msg.sender,
         authorId: myAuthorId,
         textHash: myTextHash,
         begIndex: myBegIndex,
         endIndex: myEndIndex,
-        parts: new Comment[](0)
+        parts: tempParts
       }));
 
   }
@@ -148,13 +152,14 @@ contract MMGA {
 
     require(commentIndex < article.comments.length);
 
+    Comment[] tempParts;
     article.comments[commentIndex].parts.push(Comment({
         authorDomain: msg.sender,
         authorId: 0,
         textHash: myTextHash,
         begIndex: myBegIndex,
         endIndex: myEndIndex,
-        parts: new Comment[](0)
+        parts: tempParts
       }));
 
   }
@@ -170,13 +175,14 @@ contract MMGA {
 
     require(commentIndex < article.comments.length);
 
+    Comment[] tempParts;
     article.comments[commentIndex].parts.push(Comment({
         authorDomain: msg.sender,
         authorId: myAuthorId,
         textHash: myTextHash,
         begIndex: myBegIndex,
         endIndex: myEndIndex,
-        parts: new Comment[](0)
+        parts: tempParts
       }));
 
   }
