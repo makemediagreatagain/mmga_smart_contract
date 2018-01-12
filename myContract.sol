@@ -111,7 +111,7 @@ contract MMGA {
   function addComment(int articleIndex, bytes32 myAuthorId, bytes32 myTextHash, uint32 myBegIndex, uint32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
-    require(myAuthorId.length != 0)
+    require(myAuthorId.length != 0);
     if(myBegIndex != -1) {
       require(myBegIndex < myEndIndex);
     }
