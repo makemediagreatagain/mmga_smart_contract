@@ -138,7 +138,7 @@ contract MMGA {
 
     require(commentIndex < article.comments.length);
 
-    article.comments[commentIndex].comments.push(Comment({
+    article.comments[commentIndex].parts.push(Comment({
         authorDomain: msg.sender,
         textHash: myTextHash,
         begIndex: myBegIndex,
@@ -158,7 +158,7 @@ contract MMGA {
 
     require(commentIndex < article.comments.length);
 
-    article.comments[commentIndex].comments.push(Comment({
+    article.comments[commentIndex].parts.push(Comment({
         authorDomain: msg.sender,
         authorId: myAuthorId,
         textHash: myTextHash,
