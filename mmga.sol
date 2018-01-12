@@ -172,10 +172,10 @@ contract MMGA {
   function getAuthorIndexFromName(string name) constant returns (int) {
     for(uint i = 0; i < authors.length; i++) {
       if(keccak256(authors[i]) == keccak256(name)) {
-        return i;
+        return int(i);
       }
     }
-    return int(-1);
+    return -1;
   }
 
   function getAuthorNameFromIndex(uint ind) constant returns (string) {
@@ -196,14 +196,14 @@ contract MMGA {
   //Gets next article index given possible hash colision
   function getNextArticleIndex(uint start, bytes32 uriHash) constant returns (int) {
     if(start >= articles.length) {
-      return int(-1);
+      return -1;
     }
     for(uint i = start; i < articles.length; i++) {
       if(articles[i].uriHash == uriHash) {
-        return i;
+        return int(i);
       }
     }
-    return int(-1);
+    return -1;
   }
 
   function articleExists(bytes32 uriHash, int32 timestamp) constant returns (bool) {
