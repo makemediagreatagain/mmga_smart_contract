@@ -259,7 +259,7 @@ contract MMGA {
   function getCommentsLength() constant returns (uint256) {
     return comments.length;
   }
-  function getComment(uint256 index) constant returns (address, bytes32, bytes32, int32, uint32, uint256) {
+  function getComment(uint256 index) constant returns (address, bytes32, bytes32, int32, uint32, uint256[]) {
     Comment comment = comments[index];
     return (comment.authorDomain, comment.authorId, comment.textHash, comment.begIndex, comment.endIndex, comment.parts);
   }
