@@ -234,4 +234,32 @@ contract MMGA {
     }
     return false;
   }
+
+  function getContractOwner() constant returns (address) {
+    return contractOwner;
+  }
+
+  function getArticlesLength() constant returns (uint256) {
+    return articles.length;
+  }
+
+  function getArticle(uint256 index) constant returns (Article) {
+    return articles[index];
+  }
+
+  function getCommentsLength() constant returns (uint256) {
+    return comments.length;
+  }
+
+  function getComment(uint256 index) constant returns (Comment) {
+    return comments[index];
+  }
+
+  function getSubCommentsLength() constant returns (uint256) {
+    return subComments.length;
+  }
+
+  function getSubComment(uint256 index) constant returns (SubComment) {
+    return subComments[index];
+  }
 }
