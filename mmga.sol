@@ -250,24 +250,25 @@ contract MMGA {
   function getArticlesLength() constant returns (uint256) {
     return articles.length;
   }
-
-  function getArticle(uint256 index) constant returns (Article) {
-    return articles[index];
+  function getArticle(uint256 index) constant returns (address, bytes32, int32, bytes32, bytes32, bytes32, bool, uint, uint256[]) {
+    Article article = articles[index];
+    return (article.creatorDomain, article.creator, article.timestamp, article.uriHash, article.titleHash, 
+      article.authorHash, article.authorMapped, article.authorIndex, article.comments);
   }
 
   function getCommentsLength() constant returns (uint256) {
     return comments.length;
   }
-
-  function getComment(uint256 index) constant returns (Comment) {
-    return comments[index];
+  function getComment(uint256 index) constant returns (address, bytes32, bytes32, int32, uint32, uint256) {
+    Comment comment = comments[index];
+    return (comment.authorDomain, comment.authorId, comment.textHash, comment.begIndex, comment.endIndex, comment.parts);
   }
 
   function getSubCommentsLength() constant returns (uint256) {
     return subComments.length;
   }
-
-  function getSubComment(uint256 index) constant returns (SubComment) {
-    return subComments[index];
+  function getSubComment(uint256 index) constant returns (bytes32, int32, uint256) {
+    SubComment subComment = subComments[index];
+    return (subComment.textHash, subComment.begIndex, subComment.endIndex);
   }
 }
