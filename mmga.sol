@@ -108,7 +108,7 @@ contract MMGA {
   function removeAuthorFromArticle(uint articleIndex) {
     require(msg.sender == article.creatorDomain);
     require(articleIndex < articles.length);
-    require(article.authorMapped);
+    require(article.authorMapped == true);
     
     Article article = articles[articleIndex];
     require(article.comments.length == 0);
