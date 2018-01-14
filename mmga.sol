@@ -239,6 +239,14 @@ contract MMGA {
     return contractOwner;
   }
 
+  function getAuthorsLength() constant returns (uint256) {
+    return authors.length;
+  }
+
+  function getAuthor(uint256 index) constant returns (string) {
+    return authors[index];
+  }
+
   function getArticlesLength() constant returns (uint256) {
     return articles.length;
   }
