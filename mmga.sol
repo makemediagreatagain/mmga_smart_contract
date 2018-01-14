@@ -68,7 +68,7 @@ contract MMGA {
 
   }
 
-  function addArticleIdentified(bytes32 myCreator, int32 myTimestamp, bytes32 myUriHash, bytes32 myTitleHash, bytes32 myAuthorHash) {
+  function addArticle2(bytes32 myCreator, int32 myTimestamp, bytes32 myUriHash, bytes32 myTitleHash, bytes32 myAuthorHash) {
     require(!articleExists(myUriHash, myTimestamp));
 
     articles.push(Article({
@@ -131,7 +131,7 @@ contract MMGA {
   
   //begIndex = -1 means comment does not refer to passage in text
   //For domain comment (added on behalf of someone)
-  function addCommentIdentified(uint articleIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) {
+  function addComment2(uint articleIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
     require(myAuthorId.length != 0);
@@ -171,7 +171,7 @@ contract MMGA {
 
   }
 
-  function addNestedCommmentIdentified(uint commentIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) {
+  function addNestedCommment2(uint commentIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) {
     require(myTextHash.length != 0);
     if(myBegIndex != -1) {
       require(uint(myBegIndex) < myEndIndex);
