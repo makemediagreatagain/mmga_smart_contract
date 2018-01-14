@@ -12,7 +12,14 @@ contract MMGA {
     //In case comment refers to specific passage. begIndex should be set to -1 in case it doesn't
     int32 begIndex;
     uint32 endIndex;
-    Comment[] parts;
+    SubComment[] parts;
+  }
+
+  struct SubComment {
+    bytes32 textHash;
+    //In case comment refers to specific passage. begIndex should be set to -1 in case it doesn't
+    int32 begIndex;
+    uint32 endIndex;
   }
 
   struct Article {
@@ -106,7 +113,7 @@ contract MMGA {
     }
 
     Article article = articles[articleIndex];
-    Comment[] tempParts;
+    SubComment[] tempParts;
     article.comments.push(Comment({
         authorDomain: msg.sender,
         authorId: 0,
@@ -129,7 +136,7 @@ contract MMGA {
     }
 
     Article article = articles[articleIndex];
-    Comment[] tempParts;
+    SubComment[] tempParts;
     article.comments.push(Comment({
         authorDomain: msg.sender,
         authorId: myAuthorId,
@@ -152,14 +159,10 @@ contract MMGA {
 
     require(commentIndex < article.comments.length);
 
-    Comment[] tempParts;
-    article.comments[commentIndex].parts.push(Comment({
-        authorDomain: msg.sender,
-        authorId: 0,
+    article.comments[commentIndex].parts.push(SubComment({
         textHash: myTextHash,
         begIndex: myBegIndex,
-        endIndex: myEndIndex,
-        parts: tempParts
+        endIndex: myEndIndex
       }));
 
   }
@@ -175,14 +178,10 @@ contract MMGA {
 
     require(commentIndex < article.comments.length);
 
-    Comment[] tempParts;
-    article.comments[commentIndex].parts.push(Comment({
-        authorDomain: msg.sender,
-        authorId: myAuthorId,
+    article.comments[commentIndex].parts.push(SubComment({
         textHash: myTextHash,
         begIndex: myBegIndex,
-        endIndex: myEndIndex,
-        parts: tempParts
+        endIndex: myEndIndex
       }));
 
   }
