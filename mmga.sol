@@ -12,14 +12,14 @@ contract MMGA {
     //In case comment refers to specific passage. begIndex should be set to -1 in case it doesn't
     int32 begIndex;
     uint32 endIndex;
-    SubComment[] parts;
+    uint256[] parts;
   }
 
   struct SubComment {
     bytes32 textHash;
     //In case comment refers to specific passage. begIndex should be set to -1 in case it doesn't
     int32 begIndex;
-    uint32 endIndex;
+    uint256 endIndex;
   }
 
   struct Article {
@@ -33,14 +33,18 @@ contract MMGA {
     bytes32 authorHash;
     bool authorMapped;
     uint authorIndex;
-    Comment[] comments;
+    uint256[] comments;
   }
+
+
 
   
   address contractOwner;
   //Map author ID to array index
   string[] public authors;
   Article[] public articles;
+  Comment[] public comments;
+  SubComment[] public subComments;
 
   function MMGA() {
     contractOwner = msg.sender;
@@ -50,7 +54,6 @@ contract MMGA {
   function addArticle(int32 myTimestamp, bytes32 myUriHash, bytes32 myTitleHash, bytes32 myAuthorHash) {
     require(!articleExists(myUriHash, myTimestamp));
 
-    Comment[] tempComments;
     articles.push(Article({
         creatorDomain: msg.sender,
         creator: 0,
@@ -60,7 +63,7 @@ contract MMGA {
         authorHash: myAuthorHash,
         authorMapped: false,
         authorIndex: 0,
-        comments: tempComments
+        comments: new uint256[](0)
       }));
 
   }
@@ -68,7 +71,6 @@ contract MMGA {
   function addArticle(bytes32 myCreator, int32 myTimestamp, bytes32 myUriHash, bytes32 myTitleHash, bytes32 myAuthorHash) {
     require(!articleExists(myUriHash, myTimestamp));
 
-    Comment[] tempComments;
     articles.push(Article({
         creatorDomain: msg.sender,
         creator: myCreator,
@@ -78,7 +80,7 @@ contract MMGA {
         authorHash: myAuthorHash,
         authorMapped: false,
         authorIndex: 0, 
-        comments: tempComments
+        comments: new uint256[](0)
       }));
 
   }
@@ -113,15 +115,16 @@ contract MMGA {
     }
 
     Article article = articles[articleIndex];
-    SubComment[] tempParts;
-    article.comments.push(Comment({
+    uint256 index = comments.length;
+    comments.push(Comment({
         authorDomain: msg.sender,
         authorId: 0,
         textHash: myTextHash,
         begIndex: myBegIndex,
         endIndex: myEndIndex,
-        parts: tempParts
+        parts: new uint256[](0)
       }));
+    article.comments.push(index);
 
   }
   
@@ -136,53 +139,52 @@ contract MMGA {
     }
 
     Article article = articles[articleIndex];
-    SubComment[] tempParts;
-    article.comments.push(Comment({
+    uint256 index = comments.length;
+    comments.push(Comment({
         authorDomain: msg.sender,
         authorId: myAuthorId,
         textHash: myTextHash,
         begIndex: myBegIndex,
         endIndex: myEndIndex,
-        parts: tempParts
+        parts: new uint256[](0)
       }));
+    article.comments.push(index);
 
   }
   
-  function addNestedCommment(uint articleIndex, uint commentIndex, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) {
-    require(articleIndex < articles.length);
+  function addNestedCommment(uint commentIndex, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) {
     require(myTextHash.length != 0);
     if(myBegIndex != -1) {
       require(uint(myBegIndex) < myEndIndex);
     }
 
-    Article article = articles[articleIndex];
+    require(commentIndex < comments.length);
 
-    require(commentIndex < article.comments.length);
-
-    article.comments[commentIndex].parts.push(SubComment({
+    uint256 index = subComments.length;
+    subComments.push(SubComment({
         textHash: myTextHash,
         begIndex: myBegIndex,
         endIndex: myEndIndex
       }));
+    comments[commentIndex].parts.push(index);
 
   }
 
-  function addNestedCommment(uint articleIndex, uint commentIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) {
-    require(articleIndex < articles.length);
+  function addNestedCommment(uint commentIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) {
     require(myTextHash.length != 0);
     if(myBegIndex != -1) {
       require(uint(myBegIndex) < myEndIndex);
     }
 
-    Article article = articles[articleIndex];
+    require(commentIndex < comments.length);
 
-    require(commentIndex < article.comments.length);
-
-    article.comments[commentIndex].parts.push(SubComment({
+    uint256 index = subComments.length;
+    subComments.push(SubComment({
         textHash: myTextHash,
         begIndex: myBegIndex,
         endIndex: myEndIndex
       }));
+    comments[commentIndex].parts.push(index);
 
   }
 
