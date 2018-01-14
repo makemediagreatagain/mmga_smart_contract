@@ -85,6 +85,11 @@ contract MMGA {
 
   }
 
+   function addAuthor(string name) {
+      require(!authorExists(name));
+      authors.push(name);
+  }
+
   function setAuthorInArticle(uint articleIndex, uint16 authorIndex) {
     //Author can only be set by the creator of the article
     require(msg.sender == article.creatorDomain);
@@ -100,11 +105,17 @@ contract MMGA {
 
   }
 
-  function addAuthor(string name) {
-      require(!authorExists(name));
-      authors.push(name);
-  }
+  function removeAuthorFromArticle(uint articleIndex) {
+    require(msg.sender == article.creatorDomain);
+    require(articleIndex < articles.length);
+    require(article.authorMapped);
+    
+    Article article = articles[articleIndex];
+    require(article.comments.length == 0);
 
+    article.authorMapped = false;
+
+  }
 
 
   //begIndex = -1 means comment does not refer to passage in text
