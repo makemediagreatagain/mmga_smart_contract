@@ -252,7 +252,7 @@ contract MMGA {
   function getCommentsLength() public constant returns (uint256) {
     return comments.length;
   }
-  function getComment(uint256 index) public constant returns (address, bytes32, bytes32, int32, uint32, uint256[]) {
+  function getComment(uint256 index) public constant returns (address, bytes32, bytes32, int64, uint32, uint256[]) {
     Comment storage comment = comments[index];
     return (comment.authorDomain, comment.authorId, comment.textHash, comment.begIndex, comment.endIndex, comment.parts);
   }
@@ -260,7 +260,7 @@ contract MMGA {
   function getSubCommentsLength() public constant returns (uint256) {
     return subComments.length;
   }
-  function getSubComment(uint256 index) public constant returns (bytes32, int32, uint256) {
+  function getSubComment(uint256 index) public constant returns (bytes32, int64, uint256) {
     SubComment storage subComment = subComments[index];
     return (subComment.textHash, subComment.begIndex, subComment.endIndex);
   }
