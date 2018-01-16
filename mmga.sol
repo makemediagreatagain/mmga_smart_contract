@@ -2,13 +2,12 @@ pragma solidity ^0.4.15;
 
 contract MMGA {
 
-  //A comment can be created by a platform on behalf of a user or directly by a user. The authorDomain address therefore can be from a platform (domain) or from a specific user.
-  //In case the address is from a platform, authorId can further be set to identity the user within the platform
   struct Comment {
-    address authorDomain;
-    bytes32 authorId;
+    //A resource can be created by a platform on behalf of a user or directly by a user. The creatorDomain address therefore can be from a platform (domain) or from a specific user.
+  //In case the address is from a platform, creatorId can further be set to identity the user within the platform
+    address creatorDomain;
+    bytes32 creatorId;
     bytes32 textHash;
-
     //In case comment refers to specific passage. begIndex should be set to -1 in case it doesn't
     int64 begIndex;
     uint32 endIndex;
@@ -22,10 +21,17 @@ contract MMGA {
     uint32 endIndex;
   }
 
-  struct Article {
-    //Same logic as in Comment
+  struct Author {
     address creatorDomain;
-    bytes32 creator;
+    bytes32 creatorId;
+    
+    bytes32 authorId;
+    string authorName;
+  }
+
+  struct Article {
+    address creatorDomain;
+    bytes32 creatorId;
 
     int32 timestamp;
     bytes32 uriHash;
@@ -41,7 +47,7 @@ contract MMGA {
   
   address contractOwner;
   //Map author ID to array index
-  string[] public authors;
+  Author[] public authors;
   Article[] public articles;
   Comment[] public comments;
   SubComment[] public subComments;
@@ -56,7 +62,7 @@ contract MMGA {
 
     articles.push(Article({
         creatorDomain: msg.sender,
-        creator: 0,
+        creatorId: 0,
         timestamp: myTimestamp,
         uriHash: myUriHash,
         titleHash: myTitleHash,
@@ -68,12 +74,12 @@ contract MMGA {
 
   }
 
-  function addArticle2(bytes32 myCreator, int32 myTimestamp, bytes32 myUriHash, bytes32 myTitleHash, bytes32 myAuthorHash) public {
+  function addArticle2(bytes32 myCreatorId, int32 myTimestamp, bytes32 myUriHash, bytes32 myTitleHash, bytes32 myAuthorHash) public {
     require(!articleExists(myUriHash, myTimestamp));
 
     articles.push(Article({
         creatorDomain: msg.sender,
-        creator: myCreator,
+        creatorId: myCreatorId,
         timestamp: myTimestamp,
         uriHash: myUriHash,
         titleHash: myTitleHash,
@@ -84,10 +90,27 @@ contract MMGA {
       }));
 
   }
-    
-   function addAuthor(string name) public {
-      require(!authorExists(name));
-      authors.push(name);
+
+   function addAuthor(bytes32 myAuthorId, string myAuthorName) public {
+      require(!authorExists(msg.sender, myAuthorId));
+
+      authors.push(Author({
+        creatorDomain: msg.sender,
+        creatorId: 0,
+        authorId: myAuthorId, 
+        authorName: myAuthorName
+        }));
+
+  }
+   function addAuthor2(bytes32 myCreatorId, bytes32 myAuthorId, string myAuthorName) public {
+      require(!authorExists(msg.sender, myAuthorId));
+
+      authors.push(Author({
+        creatorDomain: msg.sender,
+        creatorId: myCreatorId,
+        authorId: myAuthorId, 
+        authorName: myAuthorName
+        }));
   }
 
   function setAuthorInArticle(uint articleIndex, uint16 authorIndex) public {
@@ -127,9 +150,11 @@ contract MMGA {
 
     Article storage article = articles[articleIndex];
     uint256 index = comments.length;
+
+
     comments.push(Comment({
-        authorDomain: msg.sender,
-        authorId: 0,
+        creatorDomain: msg.sender,
+        creatorId: 0,
         textHash: myTextHash,
         begIndex: myBegIndex,
         endIndex: myEndIndex,
@@ -141,19 +166,21 @@ contract MMGA {
   
   //begIndex = -1 means comment does not refer to passage in text
   //For domain comment (added on behalf of someone)
-  function addComment2(uint articleIndex, bytes32 myAuthorId, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) public {
+  function addComment2(uint articleIndex, bytes32 myCreatorId, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) public {
     require(articleIndex < articles.length);
     require(myTextHash.length != 0);
-    require(myAuthorId.length != 0);
+    require(myCreatorId.length != 0);
     if(myBegIndex != -1) {
       require(uint(myBegIndex) < myEndIndex);
     }
 
     Article storage article = articles[articleIndex];
     uint256 index = comments.length;
+
+
     comments.push(Comment({
-        authorDomain: msg.sender,
-        authorId: myAuthorId,
+        creatorDomain: msg.sender,
+        creatorId: myCreatorId,
         textHash: myTextHash,
         begIndex: myBegIndex,
         endIndex: myEndIndex,
@@ -182,23 +209,27 @@ contract MMGA {
   }
 
   //Returns -1 if author does not exist
-  function getAuthorIndexFromName(string name) public constant returns (int) {
+  function getAuthorIndexFromId(bytes32 myAuthorId) public constant returns (int) {
     for(uint i = 0; i < authors.length; i++) {
-      if(keccak256(authors[i]) == keccak256(name)) {
+      if(authors[i].authorId == myAuthorId && authors[i].creatorDomain == msg.sender) {
         return int(i);
       }
     }
     return -1;
   }
 
-  function getAuthorNameFromIndex(uint ind) public constant returns (string) {
-    require(ind < authors.length);
-    return authors[ind];
-  }
-
-  function authorExists(string name) public constant returns (bool) {
+  function getAuthorIndexFromId2(bytes32 myCreatorId, bytes32 myAuthorId) public constant returns (int) {
     for(uint i = 0; i < authors.length; i++) {
-      if(keccak256(authors[i]) == keccak256(name)) {
+      if(authors[i].authorId == myAuthorId && authors[i].creatorDomain == msg.sender && authors[i].creatorId == myCreatorId) {
+        return int(i);
+      }
+    }
+    return -1;
+  }  
+
+  function authorExists(address creatorDomain, bytes32 authorId) public constant returns (bool) {
+    for(uint i = 0; i < authors.length; i++) {
+      if(authors[i].creatorDomain == creatorDomain && authors[i].authorId == authorId) {
         return true;
       }
     }
@@ -236,16 +267,18 @@ contract MMGA {
     return authors.length;
   }
 
-  function getAuthor(uint256 index) public constant returns (string) {
-    return authors[index];
+  function getAuthor(uint256 index) public constant returns (address, bytes32, bytes32, string) {
+    require(index < authors.length);
+    return (authors[index].creatorDomain, authors[index].creatorId, authors[index].authorId, authors[index].authorName);
   }
 
   function getArticlesLength() public constant returns (uint256) {
     return articles.length;
   }
   function getArticle(uint256 index) public constant returns (address, bytes32, int32, bytes32, bytes32, bytes32, bool, uint, uint256[]) {
+    require(index < articles.length);
     Article storage article = articles[index];
-    return (article.creatorDomain, article.creator, article.timestamp, article.uriHash, article.titleHash, 
+    return (article.creatorDomain, article.creatorId, article.timestamp, article.uriHash, article.titleHash, 
       article.authorHash, article.authorMapped, article.authorIndex, article.comments);
   }
 
@@ -253,14 +286,16 @@ contract MMGA {
     return comments.length;
   }
   function getComment(uint256 index) public constant returns (address, bytes32, bytes32, int64, uint32, uint256[]) {
+    require(index < comments.length);
     Comment storage comment = comments[index];
-    return (comment.authorDomain, comment.authorId, comment.textHash, comment.begIndex, comment.endIndex, comment.parts);
+    return (comment.creatorDomain, comment.creatorId, comment.textHash, comment.begIndex, comment.endIndex, comment.parts);
   }
 
   function getSubCommentsLength() public constant returns (uint256) {
     return subComments.length;
   }
   function getSubComment(uint256 index) public constant returns (bytes32, int64, uint256) {
+    require(index < subComments.length);
     SubComment storage subComment = subComments[index];
     return (subComment.textHash, subComment.begIndex, subComment.endIndex);
   }
