@@ -10,7 +10,7 @@ contract MMGA {
     bytes32 textHash;
 
     //In case comment refers to specific passage. begIndex should be set to -1 in case it doesn't
-    int32 begIndex;
+    int64 begIndex;
     uint32 endIndex;
     uint256[] parts;
   }
@@ -18,8 +18,8 @@ contract MMGA {
   struct SubComment {
     bytes32 textHash;
     //In case comment refers to a specific passage. begIndex should be set to -1 in case it doesn't
-    int32 begIndex;
-    uint256 endIndex;
+    int64 begIndex;
+    uint32 endIndex;
   }
 
   struct Article {
@@ -116,7 +116,6 @@ contract MMGA {
     article.authorMapped = false;
 
   }
-
 
   //begIndex = -1 means comment does not refer to passage in text
   function addComment(uint articleIndex, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) public {
