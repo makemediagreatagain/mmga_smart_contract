@@ -2,6 +2,21 @@ pragma solidity ^0.4.15;
 
 contract MMGA {
 
+  //Events
+  //Indexed arguments will not be stored themselves. 
+  //You can only search for the values, but it is impossible to retrieve the values themselves.
+  event AddArticleEvent(
+    address indexed creatorDomain, bytes32 creatorId, int32 timestamp,
+    bytes32 indexed uriHash, bytes32 titleHash, bytes32 authorHash,
+    bool authorMapped, uint authorIndex
+    );
+
+  event SetAuthorInArticleEvent(uint indexed articleIndex, uint16 authorIndex);
+  event RemoveAuthorFromArticleEvent(uint articleIndex);
+  event AddCommentEvent(uint indexed articleIndex, bytes32 indexed myCreatorId, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex);
+  event AddSubCommmentEvent(uint indexed commentIndex, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex);
+
+
   struct Comment {
     //A resource can be created by a platform on behalf of a user or directly by a user. The creatorDomain address therefore can be from a platform (domain) or from a specific user.
   //In case the address is from a platform, creatorId can further be set to identity the user within the platform
@@ -72,6 +87,8 @@ contract MMGA {
         comments: new uint256[](0)
       }));
 
+    AddArticleEvent(msg.sender, 0, myTimestamp, myUriHash, myTitleHash, myAuthorHash, false, 0);
+
   }
 
   function addArticle2(bytes32 myCreatorId, int32 myTimestamp, bytes32 myUriHash, bytes32 myTitleHash, bytes32 myAuthorHash) public {
@@ -89,6 +106,8 @@ contract MMGA {
         comments: new uint256[](0)
       }));
 
+    AddArticleEvent(msg.sender, myCreatorId, myTimestamp, myUriHash, myTitleHash, myAuthorHash, false, 0);
+
   }
 
    function addAuthor(bytes32 myAuthorId, string myAuthorName) public {
@@ -101,6 +120,7 @@ contract MMGA {
         authorName: myAuthorName
         }));
 
+
   }
    function addAuthor2(bytes32 myCreatorId, bytes32 myAuthorId, string myAuthorName) public {
       require(!authorExists(msg.sender, myAuthorId));
@@ -111,6 +131,8 @@ contract MMGA {
         authorId: myAuthorId, 
         authorName: myAuthorName
         }));
+
+
   }
 
   function setAuthorInArticle(uint articleIndex, uint16 authorIndex) public {
@@ -126,6 +148,8 @@ contract MMGA {
     article.authorMapped = true;
     article.authorIndex = authorIndex;
 
+    SetAuthorInArticleEvent(articleIndex, authorIndex);
+
   }
 
   function removeAuthorFromArticle(uint articleIndex) public {
@@ -138,6 +162,7 @@ contract MMGA {
 
     article.authorMapped = false;
 
+    RemoveAuthorFromArticleEvent(articleIndex);
   }
 
   //begIndex = -1 means comment does not refer to passage in text
@@ -161,6 +186,8 @@ contract MMGA {
         parts: new uint256[](0)
       }));
     article.comments.push(index);
+
+    AddCommentEvent(articleIndex, 0, myTextHash, myBegIndex, myEndIndex);
 
   }
   
@@ -188,6 +215,8 @@ contract MMGA {
       }));
     article.comments.push(index);
 
+    AddCommentEvent(articleIndex, myCreatorId, myTextHash, myBegIndex, myEndIndex);
+
   }
   
   function addSubCommment(uint commentIndex, bytes32 myTextHash, int32 myBegIndex, uint32 myEndIndex) public {
@@ -205,6 +234,8 @@ contract MMGA {
         endIndex: myEndIndex
       }));
     comments[commentIndex].parts.push(index);
+
+    AddSubCommmentEvent(commentIndex, myTextHash, myBegIndex, myEndIndex);
 
   }
 
